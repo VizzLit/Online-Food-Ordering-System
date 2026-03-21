@@ -210,7 +210,11 @@ button:active {
 /* ================= GRADIENT TEXT ================= */
 .gradient-text {
   background: linear-gradient(135deg, #ff4757, #ff9f43);
+
+  background-clip: text;              /* ADD THIS */
   -webkit-background-clip: text;
+
+  color: transparent;                /* ADD THIS */
   -webkit-text-fill-color: transparent;
 }
 
