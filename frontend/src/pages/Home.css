@@ -196,3 +196,21 @@
     justify-content: center;
   }
 }
+.hero {
+  padding: 80px;
+}
+
+.hero-left h1 {
+  font-size: 64px;
+  font-weight: 700;
+}
+
+.hero-left p {
+  font-size: 18px;
+  color: #aaa;
+  line-height: 1.6;
+}
+
+.hero-right img {
+  width: 420px;
+}
