@@ -1,10 +1,19 @@
-import { useState } from "react";
-import foodData from "../data/foodData";
+import { useState, useEffect } from "react";
 import "./Menu.css";
 
 function Menu({ cart, setCart }) {
-  const allCategories = ["All", ...new Set(foodData.map((r) => r.category))];
+  const [foodData, setFoodData] = useState([]);
   const [activeCategory, setActiveCategory] = useState("All");
+
+  // 🔥 Fetch from backend
+  useEffect(() => {
+    fetch("https://online-food-ordering-system-r9ya.onrender.com/api/foods")
+      .then((res) => res.json())
+      .then((data) => setFoodData(data))
+      .catch((err) => console.log(err));
+  }, []);
+
+  const allCategories = ["All", ...new Set(foodData.map((r) => r.category))];
 
   const filteredData =
     activeCategory === "All"
@@ -15,7 +24,8 @@ function Menu({ cart, setCart }) {
     setCart((prev) => [...prev, item]);
   };
 
-  const isInCart = (itemId) => cart.some((item) => item.id === itemId);
+  const isInCart = (itemId) =>
+    cart.some((item) => item._id === itemId);
 
   return (
     <div className="menu-page container animate-fade-in">
@@ -31,7 +41,9 @@ function Menu({ cart, setCart }) {
         {allCategories.map((cat) => (
           <button
             key={cat}
-            className={`filter-pill ${activeCategory === cat ? "filter-pill--active" : ""}`}
+            className={`filter-pill ${
+              activeCategory === cat ? "filter-pill--active" : ""
+            }`}
             onClick={() => setActiveCategory(cat)}
           >
             {cat}
@@ -41,7 +53,7 @@ function Menu({ cart, setCart }) {
 
       {/* Restaurants */}
       {filteredData.map((restaurant) => (
-        <div key={restaurant.id} className="restaurant-section">
+        <div key={restaurant._id} className="restaurant-section">
           <div className="restaurant-header">
             <div>
               <h2>{restaurant.name}</h2>
@@ -54,13 +66,11 @@ function Menu({ cart, setCart }) {
           </div>
 
           <div className="menu-grid">
-            {restaurant.items.map((item) => (
-              <div className="menu-card glass" key={item.id}>
+            {restaurant.items?.map((item) => (
+              <div className="menu-card glass" key={item._id}>
                 <div className="card-image-wrap">
                   <img src={item.image} alt={item.name} loading="lazy" />
-                  <div className="card-rating">
-                    ⭐ {item.rating}
-                  </div>
+                  <div className="card-rating">⭐ {item.rating}</div>
                 </div>
 
                 <div className="card-body">
@@ -72,10 +82,12 @@ function Menu({ cart, setCart }) {
                   <div className="card-footer">
                     <span className="card-price">₹{item.price}</span>
                     <button
-                      className={`add-btn ${isInCart(item.id) ? "add-btn--added" : ""}`}
+                      className={`add-btn ${
+                        isInCart(item._id) ? "add-btn--added" : ""
+                      }`}
                       onClick={() => handleAddToCart(item)}
                     >
-                      {isInCart(item.id) ? "✓ Added" : "+ Add"}
+                      {isInCart(item._id) ? "✓ Added" : "+ Add"}
                     </button>
                   </div>
                 </div>
