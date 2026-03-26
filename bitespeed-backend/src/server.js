@@ -12,16 +12,21 @@ const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 
+// ✅ Seed function
+const seed = require("./utils/seed");
+
 // Connect to MongoDB
 connectDB();
 
 const app = express();
 
 // ── Middleware ────────────────────────────────────────────
-app.use(cors({
-  origin: process.env.CLIENT_URL || "*",
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "*",
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -45,6 +50,16 @@ app.use("/api/foods", foodRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
+
+// ── Seed Route (TEMPORARY) ────────────────────────────────
+app.get("/seed", async (req, res) => {
+  try {
+    await seed();
+    res.send("Database seeded successfully 🚀");
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
 
 // ── 404 Handler ───────────────────────────────────────────
 app.use((req, res) => {
