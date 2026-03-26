@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./Menu.css";
 
 function Menu({ cart, setCart }) {
