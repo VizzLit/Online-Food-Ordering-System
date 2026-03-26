@@ -2,10 +2,9 @@ import { useState } from 'react';
 import './Dashboard.css';
 
 const MOCK_ORDERS = [
-  { id: '#ORD-001', customer: 'Rahul Sharma', items: '2x Margherita, 1x Cola', status: 'Delivered', total: 548, date: '10 mins ago' },
-  { id: '#ORD-002', customer: 'Priya Singh', items: '1x Dragon Roll, 1x Miso Soup', status: 'Preparing', total: 499, date: '25 mins ago' },
-  { id: '#ORD-003', customer: 'Arjun Patel', items: '3x Classic Cheeseburger', status: 'Pending', total: 447, date: 'Just now' },
-  { id: '#ORD-004', customer: 'Sneha Gupta', items: '1x Pepperoni Feast, 2x Nachos', status: 'Delivered', total: 707, date: '1 hour ago' },
+  { id: '#ORD-001', customer: 'John Doe', items: '2x Margherita, 1x Cola', status: 'Delivered', total: 28.98, date: '10 mins ago' },
+  { id: '#ORD-002', customer: 'Sarah Smith', items: '1x Caesar Salad, 1x Water', status: 'Preparing', total: 10.99, date: '25 mins ago' },
+  { id: '#ORD-003', customer: 'Mike Johnson', items: '3x Classic Cheeseburger', status: 'Pending', total: 29.97, date: 'Just now' },
 ];
 
 const Dashboard = () => {
@@ -15,53 +14,39 @@ const Dashboard = () => {
     setOrders(orders.map(order => order.id === id ? { ...order, status: newStatus } : order));
   };
 
-  const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
-
   return (
     <div className="dashboard-page container animate-fade-in">
       <div className="dashboard-header">
         <h1>Admin <span className="gradient-text">Dashboard</span></h1>
-        <p>Manage orders and track store performance</p>
+        <p>Manage recent orders and store performance.</p>
       </div>
 
-      {/* Stats */}
       <div className="stats-grid">
         <div className="stat-card glass">
-          <div className="stat-icon-wrap gradient-bg">📦</div>
+          <div className="stat-icon">📈</div>
           <div>
-            <span className="stat-label">Total Orders</span>
-            <p className="stat-value">{orders.length}</p>
+            <h3>Total Orders</h3>
+            <p className="stat-value">124</p>
           </div>
         </div>
         <div className="stat-card glass">
-          <div className="stat-icon-wrap gradient-bg">💰</div>
+          <div className="stat-icon">💰</div>
           <div>
-            <span className="stat-label">Revenue</span>
-            <p className="stat-value">₹{totalRevenue.toLocaleString()}</p>
+            <h3>Revenue</h3>
+            <p className="stat-value">$1,240</p>
           </div>
         </div>
         <div className="stat-card glass">
-          <div className="stat-icon-wrap gradient-bg">⭐</div>
+          <div className="stat-icon">⭐</div>
           <div>
-            <span className="stat-label">Avg Rating</span>
+            <h3>Avg Rating</h3>
             <p className="stat-value">4.8</p>
           </div>
         </div>
-        <div className="stat-card glass">
-          <div className="stat-icon-wrap gradient-bg">🚀</div>
-          <div>
-            <span className="stat-label">Avg Delivery</span>
-            <p className="stat-value">28 min</p>
-          </div>
-        </div>
       </div>
 
-      {/* Orders Table */}
       <div className="orders-section glass">
-        <div className="orders-title">
-          <h2>Recent Orders</h2>
-          <span className="orders-count">{orders.length} orders</span>
-        </div>
+        <h2>Recent Orders</h2>
         <div className="table-responsive">
           <table className="orders-table">
             <thead>
@@ -78,12 +63,9 @@ const Dashboard = () => {
               {orders.map(order => (
                 <tr key={order.id}>
                   <td className="font-mono">{order.id}</td>
-                  <td>
-                    {order.customer}
-                    <br/><span className="text-sm">{order.date}</span>
-                  </td>
+                  <td>{order.customer}<br/><span className="text-sm">{order.date}</span></td>
                   <td>{order.items}</td>
-                  <td className="font-bold">₹{order.total}</td>
+                  <td className="font-bold">${order.total.toFixed(2)}</td>
                   <td>
                     <span className={`status-badge status-${order.status.toLowerCase()}`}>
                       {order.status}
@@ -99,9 +81,6 @@ const Dashboard = () => {
                       <button className="btn-primary btn-sm" onClick={() => updateStatus(order.id, 'Delivered')}>
                         Deliver
                       </button>
-                    )}
-                    {order.status === 'Delivered' && (
-                      <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Completed</span>
                     )}
                   </td>
                 </tr>

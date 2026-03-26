@@ -1,36 +1,89 @@
+import { useState } from "react";
 import foodData from "../data/foodData";
+import "./Menu.css";
 
-function Menu({ setCart }) {
+function Menu({ cart, setCart }) {
+  const allCategories = ["All", ...new Set(foodData.map((r) => r.category))];
+  const [activeCategory, setActiveCategory] = useState("All");
+
+  const filteredData =
+    activeCategory === "All"
+      ? foodData
+      : foodData.filter((r) => r.category === activeCategory);
+
+  const handleAddToCart = (item) => {
+    setCart((prev) => [...prev, item]);
+  };
+
+  const isInCart = (itemId) => cart.some((item) => item.id === itemId);
+
   return (
-    <div className="menu-container">
+    <div className="menu-page container animate-fade-in">
+      <div className="menu-header">
+        <h1>
+          Our <span className="gradient-text">Menu</span>
+        </h1>
+        <p>Choose from the best restaurants and dishes around you</p>
+      </div>
 
-      {foodData.map((restaurant) => (
-        <div key={restaurant.id} className="restaurant">
+      {/* Category Filter */}
+      <div className="category-filter">
+        {allCategories.map((cat) => (
+          <button
+            key={cat}
+            className={`filter-pill ${activeCategory === cat ? "filter-pill--active" : ""}`}
+            onClick={() => setActiveCategory(cat)}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
 
-          <h2>{restaurant.name}</h2>
+      {/* Restaurants */}
+      {filteredData.map((restaurant) => (
+        <div key={restaurant.id} className="restaurant-section">
+          <div className="restaurant-header">
+            <div>
+              <h2>{restaurant.name}</h2>
+              <div className="restaurant-meta">
+                <span className="meta-badge">⭐ {restaurant.rating}</span>
+                <span className="meta-badge">🕐 {restaurant.deliveryTime}</span>
+                <span className="meta-badge">{restaurant.category}</span>
+              </div>
+            </div>
+          </div>
 
           <div className="menu-grid">
             {restaurant.items.map((item) => (
-              <div className="menu-card" key={item.id}>
+              <div className="menu-card glass" key={item.id}>
+                <div className="card-image-wrap">
+                  <img src={item.image} alt={item.name} loading="lazy" />
+                  <div className="card-rating">
+                    ⭐ {item.rating}
+                  </div>
+                </div>
 
-                <img src={item.image} alt={item.name} />
+                <div className="card-body">
+                  <div className="card-info">
+                    <h3>{item.name}</h3>
+                    <span className="card-category">{item.category}</span>
+                  </div>
 
-                <h3>{item.name}</h3>
-                <p>₹{item.price}</p>
-
-                <button
-                  onClick={() => setCart(prev => [...prev, item])}
-                >
-                  Add to Cart
-                </button>
-
+                  <div className="card-footer">
+                    <span className="card-price">₹{item.price}</span>
+                    <button
+                      className={`add-btn ${isInCart(item.id) ? "add-btn--added" : ""}`}
+                      onClick={() => handleAddToCart(item)}
+                    >
+                      {isInCart(item.id) ? "✓ Added" : "+ Add"}
+                    </button>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
-
         </div>
       ))}
-
     </div>
   );
 }

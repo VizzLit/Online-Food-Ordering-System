@@ -8,6 +8,7 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Mock login success
     navigate('/dashboard');
   };
 
@@ -15,7 +16,6 @@ const Login = () => {
     <div className="login-page container animate-fade-in">
       <div className="auth-card glass">
         <div className="auth-header">
-          <div className="auth-logo">🔥</div>
           <h2>{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
           <p>{isLogin ? 'Login to order your favorite food' : 'Join BiteSpeed for fast delivery'}</p>
         </div>
@@ -24,38 +24,24 @@ const Login = () => {
           {!isLogin && (
             <div className="input-group">
               <label>Full Name</label>
-              <input type="text" placeholder="John Doe" required id="signup-name" />
+              <input type="text" placeholder="John Doe" required />
             </div>
           )}
           
           <div className="input-group">
             <label>Email Address</label>
-            <input type="email" placeholder="john@example.com" required id="auth-email" />
+            <input type="email" placeholder="john@example.com" required />
           </div>
 
           <div className="input-group">
             <label>Password</label>
-            <input type="password" placeholder="••••••••" required id="auth-password" />
+            <input type="password" placeholder="••••••••" required />
           </div>
 
-          {isLogin && (
-            <div className="auth-options">
-              <label className="remember-me">
-                <input type="checkbox" />
-                <span>Remember me</span>
-              </label>
-              <button type="button" className="forgot-btn">Forgot password?</button>
-            </div>
-          )}
-
-          <button type="submit" className="btn-primary auth-submit" id="auth-submit-btn">
-            {isLogin ? 'Login' : 'Create Account'}
+          <button type="submit" className="btn-primary auth-submit">
+            {isLogin ? 'Login' : 'Sign Up'}
           </button>
         </form>
-
-        <div className="auth-divider">
-          <span>or</span>
-        </div>
 
         <div className="auth-footer">
           <p>
@@ -65,9 +51,7 @@ const Login = () => {
             </button>
           </p>
           {isLogin && (
-            <button className="btn-ghost admin-btn" onClick={() => navigate('/dashboard')}>
-              🔒 Login as Admin
-            </button>
+            <button className="text-btn">Login as Admin</button>
           )}
         </div>
       </div>

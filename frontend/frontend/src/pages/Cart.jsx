@@ -6,8 +6,6 @@ const Cart = ({ cart, setCart }) => {
   const [checkoutComplete, setCheckoutComplete] = useState(false);
 
   const total = cart.reduce((sum, item) => sum + item.price, 0);
-  const deliveryFee = cart.length > 0 ? 49 : 0;
-  const grandTotal = total + deliveryFee;
 
   const handleRemove = (index) => {
     const newCart = [...cart];
@@ -18,7 +16,7 @@ const Cart = ({ cart, setCart }) => {
   const handleCheckout = () => {
     if (cart.length === 0) return;
     setCheckoutComplete(true);
-    setCart([]);
+    setCart([]); // Clear cart
   };
 
   if (checkoutComplete) {
@@ -38,13 +36,11 @@ const Cart = ({ cart, setCart }) => {
     <div className="cart-page container animate-fade-in">
       <div className="cart-header">
         <h1>Your <span className="gradient-text">Cart</span></h1>
-        <p>{cart.length} {cart.length === 1 ? 'item' : 'items'} in your cart</p>
       </div>
 
       {cart.length === 0 ? (
         <div className="empty-cart glass">
-          <div className="empty-icon">🛒</div>
-          <h2>Your cart is empty</h2>
+          <h2>Your cart is empty 😢</h2>
           <p>Explore our menu and discover your next favorite meal.</p>
           <Link to="/menu" className="btn-primary mt-4">Browse Menu</Link>
         </div>
@@ -59,7 +55,7 @@ const Cart = ({ cart, setCart }) => {
                   <p className="cart-item-cat">{item.category}</p>
                 </div>
                 <div className="cart-item-price">
-                  ₹{item.price}
+                  ${item.price.toFixed(2)}
                 </div>
                 <button 
                   className="remove-btn" 
@@ -75,29 +71,22 @@ const Cart = ({ cart, setCart }) => {
           <div className="cart-summary glass">
             <h2>Order Summary</h2>
             <div className="summary-row">
-              <span>Subtotal ({cart.length} items)</span>
-              <span>₹{total}</span>
+              <span>Subtotal</span>
+              <span>${total.toFixed(2)}</span>
             </div>
             <div className="summary-row">
               <span>Delivery Fee</span>
-              <span>₹{deliveryFee}</span>
+              <span>$2.99</span>
             </div>
             <div className="summary-divider"></div>
             <div className="summary-row total">
               <span>Total</span>
-              <span>₹{grandTotal}</span>
+              <span>${(total + 2.99).toFixed(2)}</span>
             </div>
             
-            <button className="btn-primary checkout-btn" onClick={handleCheckout} id="checkout-button">
-              Proceed to Checkout →
+            <button className="btn-primary checkout-btn" onClick={handleCheckout}>
+              Proceed to Checkout
             </button>
-
-            <div className="payment-icons">
-              <span>💳</span>
-              <span>📱</span>
-              <span>🏦</span>
-              <span className="payment-label">Secure Payment</span>
-            </div>
           </div>
         </div>
       )}
