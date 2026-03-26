@@ -8,16 +8,29 @@ function Menu({ cart, setCart }) {
   useEffect(() => {
     fetch("https://online-food-ordering-system-r9ya.onrender.com/api/foods")
       .then((res) => res.json())
-      .then((data) => setFoodData(data))
+      .then((resData) => {
+        console.log("API:", resData);
+
+        const safeData = Array.isArray(resData)
+          ? resData
+          : Array.isArray(resData.data)
+          ? resData.data
+          : [];
+
+        setFoodData(safeData);
+      })
       .catch((err) => console.log(err));
   }, []);
 
-  const allCategories = ["All", ...new Set(foodData.map((item) => item.category))];
+  const allCategories = [
+    "All",
+    ...new Set((foodData || []).map((item) => item.category)),
+  ];
 
   const filteredData =
     activeCategory === "All"
       ? foodData
-      : foodData.filter((item) => item.category === activeCategory);
+      : (foodData || []).filter((item) => item.category === activeCategory);
 
   const handleAddToCart = (item) => {
     setCart((prev) => [...prev, item]);
@@ -52,33 +65,32 @@ function Menu({ cart, setCart }) {
 
       {/* Food Items */}
       <div className="menu-grid">
-        {filteredData.map((item) => (
-          <div className="menu-card glass" key={item._id}>
-            <div className="card-image-wrap">
-              <img src={item.image} alt={item.name} loading="lazy" />
-              <div className="card-rating">⭐ {item.rating || 4.5}</div>
-            </div>
+        {Array.isArray(filteredData) &&
+          filteredData.map((item) => (
+            <div className="menu-card glass" key={item._id}>
+              <div className="card-image-wrap">
+                <img src={item.image} alt={item.name} />
+                <div className="card-rating">⭐ {item.rating || 4.5}</div>
+              </div>
 
-            <div className="card-body">
-              <div className="card-info">
+              <div className="card-body">
                 <h3>{item.name}</h3>
                 <span className="card-category">{item.category}</span>
-              </div>
 
-              <div className="card-footer">
-                <span className="card-price">₹{item.price}</span>
-                <button
-                  className={`add-btn ${
-                    isInCart(item._id) ? "add-btn--added" : ""
-                  }`}
-                  onClick={() => handleAddToCart(item)}
-                >
-                  {isInCart(item._id) ? "✓ Added" : "+ Add"}
-                </button>
+                <div className="card-footer">
+                  <span className="card-price">₹{item.price}</span>
+                  <button
+                    className={`add-btn ${
+                      isInCart(item._id) ? "add-btn--added" : ""
+                    }`}
+                    onClick={() => handleAddToCart(item)}
+                  >
+                    {isInCart(item._id) ? "✓ Added" : "+ Add"}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );
