@@ -1,30 +1,62 @@
-# BiteSpeed - Online Food Ordering System
+# 🍔 BiteSpeed — Online Food Ordering System
 
-Welcome to BiteSpeed! This project showcases a beautiful, responsive, and interactive frontend built with React, Vite, and custom Vanilla CSS (featuring glassmorphism and modern aesthetics).
+A modern, full-stack inspired food ordering web application built with **React + Vite**, designed with a premium UI/UX experience in mind.  
+Think Zomato vibes… but crafted from scratch.
 
-## 🚀 Features
-- **Stunning UI/UX:** Responsive design with smooth animations and a premium look.
-- **Menu & Cart:** Browse mock food items, filter by categories, and add items to a functional Cart utilizing local state.
-- **Admin Dashboard:** A mock dashboard for restaurant owners/admins to track and manage order statuses.
-- **Simulated Team Workflow:** The Git repository history perfectly demonstrates a collaborative multi-branch project workflow.
+---
 
-## 👥 Simulated Git Collaboration
-This project features a complete simulated Git commit history simulating three separate roles:
-1. **Team Leader (TL):** Planned Milestone 1 (`docs/M1-planning.md`) and built the Admin Dashboard (`feature/M3-admin-dashboard`).
-2. **Dev 1:** Initialized the React application layout, CSS Design System, Navbar, Footer, Home, and Menu pages (`feature/M2-ui-components`).
-3. **Dev 2:** Developed the Cart logic, Order Checkout Flow, and Login pages (`feature/M3-cart-checkout`).
+## ✨ Highlights
 
-## 🛠️ Setup & Local Development
-1. Navigate to the `frontend` directory: `cd frontend`
-2. Install dependencies: `npm install`
-3. Start the dev server: `npm run dev`
+- 🎨 **Premium UI/UX**  
+  Glassmorphism design, smooth animations, and a fully responsive layout across devices.
 
-## ☁️ Vercel Deployment Guide
-To deploy this beautiful web application:
-1. Push this repository to your own GitHub account.
-2. Log into [Vercel](https://vercel.com).
-3. Click **Add New** > **Project** and select this repository.
-4. Set the Framework Preset to **Vite** and Root Directory to `frontend`.
-5. Click **Deploy**. The `vercel.json` file is already included to ensure React Router works identically in production.
+- 🍽️ **Dynamic Menu & Cart**  
+  Browse categorized food items, add/remove from cart, and manage orders with real-time state updates.
 
-*(For detailed architectural breakdown and planning notes, please see `docs/M1-planning.md`).*
+- 📊 **Admin Dashboard (Mock)**  
+  Simulated dashboard for tracking and managing orders — giving a real-world product feel.
+
+- ⚡ **Fast Performance**  
+  Built using Vite for blazing fast development and optimized builds.
+
+- 🧠 **Clean Architecture**  
+  Modular components, reusable styling system, and organized project structure.
+
+---
+
+## 👨‍💻 Simulated Team Collaboration
+
+This project mimics a real-world development workflow with structured Git branching:
+
+- 🧑‍💼 **Team Leader (TL)**  
+  - Planned project roadmap (`docs/M1-planning.md`)  
+  - Built Admin Dashboard  
+  - Managed feature integration  
+
+- 💻 **Frontend Developer (Dev 1)**  
+  - Designed UI system & layout  
+  - Built Home, Menu, Navbar, Footer  
+  - Implemented design consistency  
+
+- 🛒 **Frontend Developer (Dev 2)**  
+  - Developed Cart logic  
+  - Built Checkout flow  
+  - Created Login system  
+
+---
+
+## 🛠️ Tech Stack
+
+- ⚛️ React (Vite)
+- 🎨 Vanilla CSS (Custom Design System)
+- 🔄 React Router
+- 📦 Local State Management
+
+---
+
+## 🚀 Getting Started
+
+```bash
+cd frontend
+npm install
+npm run dev
