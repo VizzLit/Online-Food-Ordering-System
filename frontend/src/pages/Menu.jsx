@@ -1,60 +1,62 @@
-const groupByRestaurant = (data) => {
-  const grouped = {};
-
-  data.forEach((item) => {
-    if (!grouped[item.restaurant]) {
-      grouped[item.restaurant] = {
-        name: item.restaurant,
-        category: item.category,
-        rating: item.rating,
-        deliveryTime: item.deliveryTime,
-        items: []
-      };
-    }
-
-    grouped[item.restaurant].items.push(item);
-  });
-
-  return Object.values(grouped);
-};
 import { useState, useEffect } from "react";
 import "./Menu.css";
 
+const API_URL = "https://online-food-ordering-system-r9ya.onrender.com/api";
+
 function Menu({ cart, setCart }) {
-  const [foodData, setFoodData] = useState([]);
+  const [foods, setFoods] = useState([]);
+  const [categories, setCategories] = useState(["All"]);
   const [activeCategory, setActiveCategory] = useState("All");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Fetch categories once on mount
   useEffect(() => {
-  fetch("https://online-food-ordering-system-r9ya.onrender.com/api/foods")
-    .then((res) => res.json())
-    .then((resData) => {
-      const safeData = Array.isArray(resData)
-        ? resData
-        : resData.data || [];
+    fetch(`${API_URL}/foods/categories`)
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success) setCategories(["All", ...res.data]);
+      })
+      .catch(() => {}); // categories are optional, fail silently
+  }, []);
 
-      const groupedData = groupByRestaurant(safeData);
+  // Fetch foods whenever category changes
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
 
-      setFoodData(groupedData);
-    })
-    .catch((err) => console.log(err));
-}, []);
+    const url =
+      activeCategory === "All"
+        ? `${API_URL}/foods`
+        : `${API_URL}/foods?category=${activeCategory}`;
 
-  const allCategories = [
-    "All",
-    ...new Set((foodData || []).map((item) => item.category)),
-  ];
-
-  const filteredData =
-    activeCategory === "All"
-      ? foodData
-      : (foodData || []).filter((item) => item.category === activeCategory);
+    fetch(url)
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success) {
+          setFoods(res.data);
+        } else {
+          setError("Failed to load menu.");
+        }
+      })
+      .catch(() => setError("Could not connect to server."))
+      .finally(() => setLoading(false));
+  }, [activeCategory]);
 
   const handleAddToCart = (item) => {
-    setCart((prev) => [...prev, item]);
+    setCart((prev) => {
+      const exists = prev.find((i) => i._id === item._id);
+      if (exists) {
+        // Increase quantity if already in cart
+        return prev.map((i) =>
+          i._id === item._id ? { ...i, quantity: (i.quantity || 1) + 1 } : i
+        );
+      }
+      return [...prev, { ...item, quantity: 1 }];
+    });
   };
 
-  const isInCart = (itemId) =>
-    cart.some((item) => item._id === itemId);
+  const isInCart = (itemId) => cart.some((i) => i._id === itemId);
 
   return (
     <div className="menu-page container animate-fade-in">
@@ -67,12 +69,10 @@ function Menu({ cart, setCart }) {
 
       {/* Category Filter */}
       <div className="category-filter">
-        {allCategories.map((cat) => (
+        {categories.map((cat) => (
           <button
             key={cat}
-            className={`filter-pill ${
-              activeCategory === cat ? "filter-pill--active" : ""
-            }`}
+            className={`filter-pill ${activeCategory === cat ? "filter-pill--active" : ""}`}
             onClick={() => setActiveCategory(cat)}
           >
             {cat}
@@ -80,26 +80,47 @@ function Menu({ cart, setCart }) {
         ))}
       </div>
 
-      {/* Food Items */}
-      <div className="menu-grid">
-        {Array.isArray(filteredData) &&
-          filteredData.map((item) => (
+      {/* States */}
+      {loading && (
+        <div className="menu-status">
+          <p>Loading menu...</p>
+        </div>
+      )}
+
+      {error && !loading && (
+        <div className="menu-status">
+          <p style={{ color: "var(--accent)" }}>{error}</p>
+        </div>
+      )}
+
+      {/* Food Grid */}
+      {!loading && !error && foods.length === 0 && (
+        <div className="menu-status">
+          <p>No items found in this category.</p>
+        </div>
+      )}
+
+      {!loading && !error && foods.length > 0 && (
+        <div className="menu-grid">
+          {foods.map((item) => (
             <div className="menu-card glass" key={item._id}>
               <div className="card-image-wrap">
                 <img src={item.image} alt={item.name} />
-                <div className="card-rating">⭐ {item.rating || 4.5}</div>
+                <div className="card-rating">⭐ {item.rating?.toFixed(1) || "4.5"}</div>
+                {item.isVeg && (
+                  <div className="card-veg-badge">🟢 Veg</div>
+                )}
               </div>
 
               <div className="card-body">
                 <h3>{item.name}</h3>
+                <p className="card-desc">{item.description}</p>
                 <span className="card-category">{item.category}</span>
 
                 <div className="card-footer">
                   <span className="card-price">₹{item.price}</span>
                   <button
-                    className={`add-btn ${
-                      isInCart(item._id) ? "add-btn--added" : ""
-                    }`}
+                    className={`add-btn ${isInCart(item._id) ? "add-btn--added" : ""}`}
                     onClick={() => handleAddToCart(item)}
                   >
                     {isInCart(item._id) ? "✓ Added" : "+ Add"}
@@ -108,7 +129,8 @@ function Menu({ cart, setCart }) {
               </div>
             </div>
           ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
