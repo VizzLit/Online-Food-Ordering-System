@@ -1,3 +1,22 @@
+const groupByRestaurant = (data) => {
+  const grouped = {};
+
+  data.forEach((item) => {
+    if (!grouped[item.restaurant]) {
+      grouped[item.restaurant] = {
+        name: item.restaurant,
+        category: item.category,
+        rating: item.rating,
+        deliveryTime: item.deliveryTime,
+        items: []
+      };
+    }
+
+    grouped[item.restaurant].items.push(item);
+  });
+
+  return Object.values(grouped);
+};
 import { useState, useEffect } from "react";
 import { useState, useEffect } from "react";
 import "./Menu.css";
@@ -7,21 +26,19 @@ function Menu({ cart, setCart }) {
   const [activeCategory, setActiveCategory] = useState("All");
 
   useEffect(() => {
-    fetch("https://online-food-ordering-system-r9ya.onrender.com/api/foods")
-      .then((res) => res.json())
-      .then((resData) => {
-        console.log("API:", resData);
+  fetch("https://online-food-ordering-system-r9ya.onrender.com/api/foods")
+    .then((res) => res.json())
+    .then((resData) => {
+      const safeData = Array.isArray(resData)
+        ? resData
+        : resData.data || [];
 
-        const safeData = Array.isArray(resData)
-          ? resData
-          : Array.isArray(resData.data)
-          ? resData.data
-          : [];
+      const groupedData = groupByRestaurant(safeData);
 
-        setFoodData(safeData);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+      setFoodData(groupedData);
+    })
+    .catch((err) => console.log(err));
+}, []);
 
   const allCategories = [
     "All",
