@@ -18,7 +18,6 @@ const groupByRestaurant = (data) => {
   return Object.values(grouped);
 };
 import { useState, useEffect } from "react";
-import { useState, useEffect } from "react";
 import "./Menu.css";
 
 function Menu({ cart, setCart }) {
