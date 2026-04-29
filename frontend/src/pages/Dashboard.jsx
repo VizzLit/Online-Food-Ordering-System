@@ -1,8 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import './Dashboard.css';
-
-const API_URL = 'https://online-food-ordering-system-r9ya.onrender.com/api';
 
 const MOCK_ORDERS = [
   { id: '#ORD-001', customer: 'Rahul Sharma', items: '2x Margherita, 1x Cola', status: 'Delivered', total: 548, date: '10 mins ago' },
@@ -13,57 +10,18 @@ const MOCK_ORDERS = [
 
 const Dashboard = () => {
   const [orders, setOrders] = useState(MOCK_ORDERS);
-  const [user, setUser] = useState(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
-    setUser(storedUser);
-
-    // Try to load real orders from API
-    const token = localStorage.getItem('token');
-    if (token) {
-      fetch(`${API_URL}/admin/orders`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success && data.orders?.length > 0) {
-            setOrders(data.orders);
-          }
-        })
-        .catch(() => {
-          // Silently fall back to mock data if API not available
-        });
-    }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
-  };
 
   const updateStatus = (id, newStatus) => {
-    setOrders(orders.map((order) => (order.id === id ? { ...order, status: newStatus } : order)));
+    setOrders(orders.map(order => order.id === id ? { ...order, status: newStatus } : order));
   };
 
-  const totalRevenue = orders.reduce((sum, order) => sum + (order.total || order.totalAmount || 0), 0);
+  const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
 
   return (
     <div className="dashboard-page container animate-fade-in">
-      <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <h1>Admin <span className="gradient-text">Dashboard</span></h1>
-          <p>Welcome back{user?.name ? `, ${user.name}` : ''}! Manage orders and track store performance</p>
-        </div>
-        <button
-          onClick={handleLogout}
-          className="btn-secondary"
-          style={{ alignSelf: 'center' }}
-        >
-          🚪 Logout
-        </button>
+      <div className="dashboard-header">
+        <h1>Admin <span className="gradient-text">Dashboard</span></h1>
+        <p>Manage orders and track store performance</p>
       </div>
 
       {/* Stats */}
@@ -117,29 +75,28 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => (
-                <tr key={order.id || order._id}>
-                  <td className="font-mono">{order.id || order._id}</td>
+              {orders.map(order => (
+                <tr key={order.id}>
+                  <td className="font-mono">{order.id}</td>
                   <td>
-                    {order.customer || order.user?.name || 'Customer'}
-                    <br />
-                    <span className="text-sm">{order.date || ''}</span>
+                    {order.customer}
+                    <br/><span className="text-sm">{order.date}</span>
                   </td>
-                  <td>{order.items || (order.orderItems?.map((i) => `${i.quantity}x ${i.name}`).join(', '))}</td>
-                  <td className="font-bold">₹{order.total || order.totalAmount}</td>
+                  <td>{order.items}</td>
+                  <td className="font-bold">₹{order.total}</td>
                   <td>
-                    <span className={`status-badge status-${(order.status || '').toLowerCase()}`}>
+                    <span className={`status-badge status-${order.status.toLowerCase()}`}>
                       {order.status}
                     </span>
                   </td>
                   <td>
                     {order.status === 'Pending' && (
-                      <button className="btn-secondary btn-sm" onClick={() => updateStatus(order.id || order._id, 'Preparing')}>
+                      <button className="btn-secondary btn-sm" onClick={() => updateStatus(order.id, 'Preparing')}>
                         Accept
                       </button>
                     )}
                     {order.status === 'Preparing' && (
-                      <button className="btn-primary btn-sm" onClick={() => updateStatus(order.id || order._id, 'Delivered')}>
+                      <button className="btn-primary btn-sm" onClick={() => updateStatus(order.id, 'Delivered')}>
                         Deliver
                       </button>
                     )}
