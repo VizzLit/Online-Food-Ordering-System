@@ -38,11 +38,9 @@ const Login = () => {
         return;
       }
 
-      // Save token and user to localStorage
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
 
-      // Redirect based on role
       if (data.user.role === 'admin') {
         navigate('/dashboard');
       } else {
@@ -86,17 +84,14 @@ const Login = () => {
               <input type="text" placeholder="John Doe" required id="signup-name" />
             </div>
           )}
-
           <div className="input-group">
             <label>Email Address</label>
             <input type="email" placeholder="john@example.com" required id="auth-email" />
           </div>
-
           <div className="input-group">
             <label>Password</label>
             <input type="password" placeholder="••••••••" required id="auth-password" />
           </div>
-
           {isLogin && (
             <div className="auth-options">
               <label className="remember-me">
@@ -106,15 +101,12 @@ const Login = () => {
               <button type="button" className="forgot-btn">Forgot password?</button>
             </div>
           )}
-
-          <button type="submit" className="btn-primary auth-submit" id="auth-submit-btn" disabled={loading}>
+          <button type="submit" className="btn-primary auth-submit" disabled={loading}>
             {loading ? 'Please wait...' : (isLogin ? 'Login' : 'Create Account')}
           </button>
         </form>
 
-        <div className="auth-divider">
-          <span>or</span>
-        </div>
+        <div className="auth-divider"><span>or</span></div>
 
         <div className="auth-footer">
           <p>

@@ -18,7 +18,6 @@ function App() {
   return (
     <>
       <Navbar cartCount={cart.length} />
-
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -35,7 +34,6 @@ function App() {
           />
         </Routes>
       </main>
-
       <Footer />
     </>
   );

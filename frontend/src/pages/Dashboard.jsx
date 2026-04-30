@@ -20,7 +20,6 @@ const Dashboard = () => {
     const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
     setUser(storedUser);
 
-    // Try to load real orders from API
     const token = localStorage.getItem('token');
     if (token) {
       fetch(`${API_URL}/admin/orders`, {
@@ -28,13 +27,9 @@ const Dashboard = () => {
       })
         .then((res) => res.json())
         .then((data) => {
-          if (data.success && data.orders?.length > 0) {
-            setOrders(data.orders);
-          }
+          if (data.success && data.orders?.length > 0) setOrders(data.orders);
         })
-        .catch(() => {
-          // Silently fall back to mock data if API not available
-        });
+        .catch(() => {});
     }
   }, []);
 
@@ -45,60 +40,42 @@ const Dashboard = () => {
   };
 
   const updateStatus = (id, newStatus) => {
-    setOrders(orders.map((order) => (order.id === id ? { ...order, status: newStatus } : order)));
+    setOrders(orders.map((o) => (o.id === id ? { ...o, status: newStatus } : o)));
   };
 
-  const totalRevenue = orders.reduce((sum, order) => sum + (order.total || order.totalAmount || 0), 0);
+  const totalRevenue = orders.reduce((sum, o) => sum + (o.total || o.totalAmount || 0), 0);
 
   return (
     <div className="dashboard-page container animate-fade-in">
       <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1>Admin <span className="gradient-text">Dashboard</span></h1>
-          <p>Welcome back{user?.name ? `, ${user.name}` : ''}! Manage orders and track store performance</p>
+          <p>Welcome back{user?.name ? `, ${user.name}` : ''}! Manage orders and track performance</p>
         </div>
-        <button
-          onClick={handleLogout}
-          className="btn-secondary"
-          style={{ alignSelf: 'center' }}
-        >
+        <button onClick={handleLogout} className="btn-secondary" style={{ alignSelf: 'center' }}>
           🚪 Logout
         </button>
       </div>
 
-      {/* Stats */}
       <div className="stats-grid">
         <div className="stat-card glass">
           <div className="stat-icon-wrap gradient-bg">📦</div>
-          <div>
-            <span className="stat-label">Total Orders</span>
-            <p className="stat-value">{orders.length}</p>
-          </div>
+          <div><span className="stat-label">Total Orders</span><p className="stat-value">{orders.length}</p></div>
         </div>
         <div className="stat-card glass">
           <div className="stat-icon-wrap gradient-bg">💰</div>
-          <div>
-            <span className="stat-label">Revenue</span>
-            <p className="stat-value">₹{totalRevenue.toLocaleString()}</p>
-          </div>
+          <div><span className="stat-label">Revenue</span><p className="stat-value">₹{totalRevenue.toLocaleString()}</p></div>
         </div>
         <div className="stat-card glass">
           <div className="stat-icon-wrap gradient-bg">⭐</div>
-          <div>
-            <span className="stat-label">Avg Rating</span>
-            <p className="stat-value">4.8</p>
-          </div>
+          <div><span className="stat-label">Avg Rating</span><p className="stat-value">4.8</p></div>
         </div>
         <div className="stat-card glass">
           <div className="stat-icon-wrap gradient-bg">🚀</div>
-          <div>
-            <span className="stat-label">Avg Delivery</span>
-            <p className="stat-value">28 min</p>
-          </div>
+          <div><span className="stat-label">Avg Delivery</span><p className="stat-value">28 min</p></div>
         </div>
       </div>
 
-      {/* Orders Table */}
       <div className="orders-section glass">
         <div className="orders-title">
           <h2>Recent Orders</h2>
@@ -107,45 +84,20 @@ const Dashboard = () => {
         <div className="table-responsive">
           <table className="orders-table">
             <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Items</th>
-                <th>Total</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
+              <tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Action</th></tr>
             </thead>
             <tbody>
               {orders.map((order) => (
                 <tr key={order.id || order._id}>
                   <td className="font-mono">{order.id || order._id}</td>
-                  <td>
-                    {order.customer || order.user?.name || 'Customer'}
-                    <br />
-                    <span className="text-sm">{order.date || ''}</span>
-                  </td>
-                  <td>{order.items || (order.orderItems?.map((i) => `${i.quantity}x ${i.name}`).join(', '))}</td>
+                  <td>{order.customer || order.user?.name || 'Customer'}<br /><span className="text-sm">{order.date || ''}</span></td>
+                  <td>{order.items || order.orderItems?.map((i) => `${i.quantity}x ${i.name}`).join(', ')}</td>
                   <td className="font-bold">₹{order.total || order.totalAmount}</td>
+                  <td><span className={`status-badge status-${(order.status || '').toLowerCase()}`}>{order.status}</span></td>
                   <td>
-                    <span className={`status-badge status-${(order.status || '').toLowerCase()}`}>
-                      {order.status}
-                    </span>
-                  </td>
-                  <td>
-                    {order.status === 'Pending' && (
-                      <button className="btn-secondary btn-sm" onClick={() => updateStatus(order.id || order._id, 'Preparing')}>
-                        Accept
-                      </button>
-                    )}
-                    {order.status === 'Preparing' && (
-                      <button className="btn-primary btn-sm" onClick={() => updateStatus(order.id || order._id, 'Delivered')}>
-                        Deliver
-                      </button>
-                    )}
-                    {order.status === 'Delivered' && (
-                      <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Completed</span>
-                    )}
+                    {order.status === 'Pending' && <button className="btn-secondary btn-sm" onClick={() => updateStatus(order.id || order._id, 'Preparing')}>Accept</button>}
+                    {order.status === 'Preparing' && <button className="btn-primary btn-sm" onClick={() => updateStatus(order.id || order._id, 'Delivered')}>Deliver</button>}
+                    {order.status === 'Delivered' && <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Completed</span>}
                   </td>
                 </tr>
               ))}
